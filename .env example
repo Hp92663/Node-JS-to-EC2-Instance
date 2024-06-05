@@ -1,0 +1,14 @@
+
+HOST = localhost
+USER = postgres
+PASSWORD = 1234
+DATABASE = test
+DIALECT = postgres
+PORT = 5432
+SECRETKEY = 
+HOSTMAIL=smtp.gmail.com
+useremail=example@gmail.com
+PASS=
+SERVICE=gmail
+
+.ENV
