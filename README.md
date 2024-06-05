@@ -47,7 +47,7 @@ This command will print the git version in the terminal.
 Run below command to clone the code repository from Github:
 
 ```bash
-git clone https://github.com/Hp92663/node-express-postgresSQL.git
+git clone https://github.com/Hp92663/Node-JS-to-EC2-Instance.git
 ```
 
 Get inside the directory and Install Packages
