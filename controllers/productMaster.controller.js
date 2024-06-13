@@ -5,11 +5,6 @@ const sequelize = require("../config/database");
 const { Op } = require("sequelize");
 const { generateExcel } = require("../utils/exportData");
 
-const readXlsxFile = require("read-excel-file/node");
-
-const fs = require("fs");
-const ParentSubCategory = require("../models/parentSubCategory");
-
 exports.addProduct = async (req, res, next) => {
   try {
     if (!req.file) {
@@ -25,7 +20,6 @@ exports.addProduct = async (req, res, next) => {
       description,
       price,
       productCategoryID,
-      parentSubCategoryID,
     } = req.body;
 
     const image = req.file.filename;
@@ -52,7 +46,6 @@ exports.addProduct = async (req, res, next) => {
       price,
       image,
       productCategoryID,
-      parentSubCategoryID,
     });
 
     res.status(200).json({
@@ -71,41 +64,21 @@ exports.editProduct = async (req, res) => {
     const { id } = req.params;
     const {
       productCategoryID,
-      parentSubCategoryID,
       productName,
       productCode,
       description,
       price,
       image,
-      updateBy,
-      updateByIp,
     } = req.body;
-
-    // const existingProduct = await productMaster.findOne({
-    //   where: {
-    //     [Op.or]: [{ productName }, { productCode }],
-    //   },
-    // });
-
-    // if (existingProduct) {
-    //   const message =
-    //     existingProduct.productName === productName
-    //       ? "Product name already exists."
-    //       : "Product Code already exists.";
-    //   return res.status(200).json({ status: 409, message });
-    // }
 
     await productMaster.update(
       {
         productCategoryID,
-        parentSubCategoryID,
         productName,
         productCode,
         description,
         price,
         image,
-        updateBy,
-        updateByIp,
       },
       { where: { productMasterID: id } }
     );
@@ -148,10 +121,6 @@ exports.getProductById = async (req, res) => {
           model: productCategory,
           attributes: ["categoryName"],
         },
-        {
-          model: ParentSubCategory,
-          attributes: ["parentSubCategoryName"],
-        },
       ],
     });
 
@@ -179,26 +148,7 @@ exports.getProductsByCategory = async (req, res) => {
       status: 200,
       message: "products get succesfully",
       data: products,
-    });
-  } catch (error) {
-    res.status(500).json({ status: 500, error: error.message });
-  }
-};
-
-exports.getProductsByParentCategory = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const products = await productMaster.findAll({
-      where: {
-        parentSubCategoryID: id,
-        status: "1",
-      },
-    });
-
-    res.status(200).json({
-      status: 200,
-      message: "products get succesfully",
-      data: products,
+      totalcount: products.count,
     });
   } catch (error) {
     res.status(500).json({ status: 500, error: error.message });
@@ -207,16 +157,8 @@ exports.getProductsByParentCategory = async (req, res) => {
 
 exports.getAllProducts = async (req, res, next) => {
   try {
-    const {
-      page ,
-      limit,
-      searchQuery,
-      sortBy,
-      exportData,
-      productCategoryID,
-      parentSubCategoryID,
-    } = req.body;
-
+    const { page, limit, searchQuery, sortBy, exportData, productCategoryID } =
+      req.body;
 
     const condition = {};
     if (searchQuery) {
@@ -230,10 +172,8 @@ exports.getAllProducts = async (req, res, next) => {
 
     if (productCategoryID) condition.productCategoryID = productCategoryID;
 
-    if (parentSubCategoryID) condition.parentSubCategoryID = parentSubCategoryID;
-
     const order = [];
-    
+
     if (sortBy === "newest") {
       order.push(["createdAt", "DESC"]);
     } else if (sortBy === "oldest") {
@@ -261,17 +201,12 @@ exports.getAllProducts = async (req, res, next) => {
           model: productCategory,
           attributes: ["categoryName"],
         },
-        {
-          model: ParentSubCategory,
-          attributes: ["parentSubCategoryName"],
-        },
       ],
     });
 
     if (exportData) {
-      const finaldata = getalldata.rows.map(rowData => ({
+      const finaldata = getalldata.rows.map((rowData) => ({
         categoryName: rowData["productCategory.categoryName"],
-        parentSubCategoryName: rowData["parentSubCategory.parentSubCategoryName"],
         productID: rowData.productMasterID,
         productName: rowData.productName,
         model: rowData.model,
@@ -340,50 +275,5 @@ exports.poststatuschange = async (req, res, next) => {
       err.statusCode = 200;
     }
     next(err);
-  }
-};
-
-exports.uploadProduct = async (req, res, next) => {
-  try {
-    if (!req.file) return res.status(400).send("Please upload an excel file!");
-
-    let path = "./uploads/" + req.file.filename;
-    const rows = await readXlsxFile(path);
-    rows.shift();
-    const productData = [];
-
-    for (let row of rows) {
-      const product = {
-        model: row[0],
-        productName: row[1],
-        productCode: row[2],
-        description: row[3],
-        price: row[4],
-        image: row[5],
-        productCategoryID: req.body.productCategoryID,
-        parentSubCategoryID: req.body.parentSubCategoryID,
-        createBy: req.body.createBy,
-        createByIp: req.body.createByIp,
-      };
-      productData.push(product);
-    }
-
-    await sequelize.transaction(async (t) => {
-      await productMaster.bulkCreate(productData, { transaction: t });
-      fs.unlink(path, (err) => {
-        if (err) {
-          console.error(`Error deleting file: ${err.message}`);
-        } else {
-          console.error("File deleted successfully", path);
-        }
-      });
-
-      return res.status(200).send({
-        status: 200,
-        message: "File uploaded successfully " + req.file.originalname,
-      });
-    });
-  } catch (error) {
-    next(error);
   }
 };

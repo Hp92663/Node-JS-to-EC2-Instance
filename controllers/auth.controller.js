@@ -122,6 +122,7 @@ exports.userregister = async (req, res, next) => {
       reset_password_token: otp,
       email_id: emailAddress,
     };
+
     await sendEmailForOtp(emailData);
 
     cache.set(otp.toString(), {
@@ -138,6 +139,7 @@ exports.userregister = async (req, res, next) => {
       message: "OTP sent to the registered email address",
     });
   } catch (error) {
+    console.error("Error sending OTP:", error);
     res.status(500).json({ status: 500, message: error.message });
     next(error);
   }
@@ -186,6 +188,7 @@ exports.verifyOTP = async (req, res, next) => {
       message: "OTP verified successfully and user registered",
     });
   } catch (error) {
+    console.error("Error verifying OTP:", error);
     res.status(500).json({
       status: 500,
       message: "An error occurred during OTP verification",

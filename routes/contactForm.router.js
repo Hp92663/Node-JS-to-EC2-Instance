@@ -2,8 +2,8 @@ const express = require("express");
 const contactFormController = require("../controllers/contactForm.controller");
 const router = express.Router();
 
-router.post("/addcontact", contactFormController.postAddContact);
+router.post("/addcontactquery", contactFormController.postAddContact);
 
-router.post("/getallcontactdata", contactFormController.getAllContactData);
+router.post("/getallcontactquery", contactFormController.getAllContactData);
 
 module.exports = router;

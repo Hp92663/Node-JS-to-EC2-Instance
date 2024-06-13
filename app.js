@@ -55,7 +55,7 @@ app.use((error, req, res, next) => {
   return res.status(status).json({ status, message });
 });
 app.get("/", (req, res) => {
-  res.json({ message: "Welcome to Mehta India" });
+  res.json({ message: "Welcome to Node to EC2" });
 });
 
 sequelize

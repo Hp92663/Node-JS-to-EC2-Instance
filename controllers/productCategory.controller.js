@@ -1,16 +1,13 @@
 const productMaster = require("../models/productMaster");
 const productCategory = require("../models/productCategory");
-const ParentSubCategory = require("../models/parentSubCategory");
 const Sequelize = require("sequelize");
 const sequelize = require("../config/database");
 const { generateExcel } = require("../utils/exportData");
-const readXlsxFile = require("read-excel-file/node");
-const fs = require("fs");
 
 // add
 exports.addCategory = async (req, res) => {
   try {
-    const { categoryName, description, createBy, createByIp } = req.body;
+    const { categoryName, description } = req.body;
 
     const validation = categoryName.toLowerCase().trim();
 
@@ -27,8 +24,6 @@ exports.addCategory = async (req, res) => {
     const newCategory = await productCategory.create({
       categoryName,
       description,
-      createBy,
-      createByIp,
     });
 
     res.status(200).json({
@@ -45,7 +40,7 @@ exports.addCategory = async (req, res) => {
 exports.editCategory = async (req, res) => {
   try {
     const { id } = req.params;
-    const { categoryName, description, updateBy, updateByIp } = req.body;
+    const { categoryName, description } = req.body;
 
     const validation = categoryName.toLowerCase().trim();
 
@@ -79,17 +74,6 @@ exports.editCategory = async (req, res) => {
 exports.deleteCategory = async (req, res) => {
   try {
     const { id } = req.params;
-    const { deleteBy, deleteByIp } = req.body;
-    const parentcategoryCount = await ParentSubCategory.count({
-      where: { productCategoryID: id },
-    });
-    if (parentcategoryCount > 0) {
-      return res.status(200).json({
-        status: 400,
-        message:
-          "Can't delete category it is associated with parent sub-category",
-      });
-    }
     await productCategory.update(
       { status: "2", deleteBy, deleteByIp },
       { where: { productCategoryID: id } }
@@ -110,7 +94,10 @@ exports.deleteCategory = async (req, res) => {
 exports.getAllCategories = async (req, res, next) => {
   try {
     // const {searchQuery, exportData} = req.body;
-    const { page , limit , searchQuery, exportData } = await req.body;
+    const { searchQuery, exportData } = await req.body;
+
+    const page = req.body.page ? parseInt(req.body.page, 10) : null;
+    const limit = req.body.limit ? parseInt(req.body.limit, 10) : null;
 
     const condition = {};
     if (searchQuery) {
@@ -157,10 +144,11 @@ exports.getAllCategories = async (req, res, next) => {
       status: 200,
       data: categories.rows,
       totalcount: categories.count,
-      page: +page,
-      pageSize: paginationQuery.limit,
+      page: page !== null ? page : 1,
+      pageSize: limit !== null ? limit : categories.count,
     });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: error.message });
     next(error);
   }
@@ -204,6 +192,7 @@ exports.getAllDeletedCategories = async (req, res, next) => {
       pageSize: paginationQuery.limit,
     });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: error.message });
     next(error);
   }
@@ -329,45 +318,6 @@ exports.recycleDeletedCategory = async (req, res, next) => {
       status: 500,
       message: error.message,
     });
-    next(error);
-  }
-};
-
-exports.uploadProductCategory = async (req, res, next) => {
-  try {
-    if (!req.file) return res.status(400).send("Please upload an excel file!");
-
-    let path = "./uploads/" + req.file.filename;
-    const rows = await readXlsxFile(path);
-    rows.shift();
-    const category = [];
-
-    for (let row of rows) {
-      const product = {
-        categoryName: row[0],
-        description: row[1],
-        createBy: req.body.createBy,
-        createByIp: req.body.createByIp,
-      };
-      category.push(product);
-    }
-
-    await sequelize.transaction(async (t) => {
-      await productCategory.bulkCreate(category, { transaction: t });
-      fs.unlink(path, (err) => {
-        if (err) {
-          console.error(`Error deleting file: ${err.message}`);
-        } else {
-          console.log("File deleted successfully", path);
-        }
-      });
-
-      return res.status(200).send({
-        status: 200,
-        message: "File uploaded successfully " + req.file.originalname,
-      });
-    });
-  } catch (error) {
     next(error);
   }
 };

@@ -8,8 +8,7 @@ const dbUser = dotenv.parsed.USER;
 const dbPassword = dotenv.parsed.PASSWORD;
 const dbDialect = dotenv.parsed.DIALECT;
 
-// logger.info('Connecting to DB...');
-const mehta = new Sequelize(dbDatabase, dbUser, dbPassword, {
+const node_to_ec2 = new Sequelize(dbDatabase, dbUser, dbPassword, {
   host: dbHost,
   dialect: dbDialect,
   dialectOptions: {
@@ -21,4 +20,4 @@ const mehta = new Sequelize(dbDatabase, dbUser, dbPassword, {
 
 logger.info(`${dbDatabase} connected.`);
 
-module.exports = mehta;
+module.exports = node_to_ec2;

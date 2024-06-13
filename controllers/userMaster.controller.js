@@ -1,7 +1,5 @@
 const UserMaster = require("../models/userMaster");
 const Sequelize = require("sequelize");
-const sequelize = require("../config/database");
-const logger = require("../config/logger");
 
 exports.getUserProfileData = async (req, res) => {
   try {

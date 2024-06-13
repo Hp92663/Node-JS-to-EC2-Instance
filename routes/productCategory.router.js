@@ -1,7 +1,6 @@
 const express = require("express");
 const productCategoryController = require("../controllers/productCategory.controller");
 const router = express.Router();
-const { uploadfile } = require("../middleware/upload");
 
 router.post("/addcategory", productCategoryController.addCategory);
 
@@ -30,11 +29,5 @@ router.post(
   "/getalldeletedcategorydata",
   productCategoryController.getAllDeletedCategories
 );
-
-router.post(
-  "/uploadexcel",
-  uploadfile,
-  productCategoryController.uploadProductCategory
-); //upload
 
 module.exports = router;

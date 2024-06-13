@@ -3,7 +3,6 @@ const productMastercontroller = require("../controllers/productMaster.controller
 const multer = require("multer");
 const router = express.Router();
 const { uploadproduct } = require("../middleware/upload");
-const { uploadfile } = require("../middleware/upload");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -35,15 +34,9 @@ router.get(
   productMastercontroller.getProductsByCategory
 );
 
-router.get(
-  "/getproductbyparentsubcategory/:id",
-  productMastercontroller.getProductsByParentCategory
-);
-
 router.post("/deletebyid/:id", productMastercontroller.deleteProductById);
 
 router.post("/poststatuschange", productMastercontroller.poststatuschange);
 
-router.post("/uploadexcel", uploadfile, productMastercontroller.uploadProduct); //upload
 
 module.exports = router;

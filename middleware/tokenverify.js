@@ -12,7 +12,7 @@ const verifyToken = async (req, res, next) => {
   const token = req.headers.authorization;
 
   if (!token || !token.startsWith("Bearer ")) {
-    return res.status(200).json({  status: 401,message: "Unauthorized" });
+    return res.status(200).json({ status: 401, message: "Unauthorized" });
   }
 
   const tokenData = token.replace("Bearer ", "");
@@ -25,7 +25,7 @@ const verifyToken = async (req, res, next) => {
     });
 
     if (!userDetails) {
-      return res.status(200).json({  status: 401,message: "Unauthorized" });
+      return res.status(200).json({ status: 401, message: "Unauthorized" });
     }
 
     // Attach user details to the request for further processing if needed
@@ -36,7 +36,8 @@ const verifyToken = async (req, res, next) => {
 
     next();
   } catch (error) {
-    return res.status(200).json({  status: 401,message: "Unauthorized" });
+    console.error("Token verification error:", error);
+    return res.status(200).json({ status: 401, message: "Unauthorized" });
   }
 };
 
