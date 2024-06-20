@@ -68,8 +68,10 @@ exports.editProduct = async (req, res) => {
       productCode,
       description,
       price,
-      image,
     } = req.body;
+
+   const image = req.file.filename;
+
 
     await productMaster.update(
       {
