@@ -1,12 +1,11 @@
-const dotenv = require("dotenv").config();
+require("dotenv").config();
 const { Sequelize } = require("sequelize");
 const logger = require("./logger");
-console.log('dotenv ->>> ', dotenv);
-const dbHost = process.dotenv.HOST;
-const dbDatabase = process.dotenv.DATABASE;
-const dbUser = process.dotenv.USER;
-const dbPassword = process.dotenv.PASSWORD;
-const dbDialect = process.dotenv.DIALECT;
+const dbHost = process.env.HOST;
+const dbDatabase = process.env.DATABASE;
+const dbUser = process.env.USER;
+const dbPassword = process.env.PASSWORD;
+const dbDialect = process.env.DIALECT;
 
 const node_to_ec2 = new Sequelize(dbDatabase, dbUser, dbPassword, {
   host: dbHost,
