@@ -13,6 +13,7 @@ const node_to_ec2 = new Sequelize(dbDatabase, dbUser, dbPassword, {
   dialectOptions: {
     useUTC: false,
   },
+  secure: false,
   timezone: "+05:30",
   logging: false,
 });
