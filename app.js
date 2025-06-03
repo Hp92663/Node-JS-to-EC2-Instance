@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 require("dotenv").config();
+console.log('Env-----------------------------', process.env);
 const cors = require("cors");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
@@ -8,7 +9,6 @@ const http = require("http");
 const sequelize = require("./config/database");
 const { errorMessage } = require("./response_message/message");
 const { statusCodes } = require("./utils/commonVars");
-console.log('Env-----------------------------', process.env);
 const port = 3000;
 
 app.use(cors());
