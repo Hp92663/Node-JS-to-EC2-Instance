@@ -12,8 +12,11 @@ const node_to_ec2 = new Sequelize(dbDatabase, dbUser, dbPassword, {
   dialect: dbDialect,
   dialectOptions: {
     useUTC: false,
+    ssl: {
+      require: true,
+      rejectUnauthorized: false, // You may need this for self-signed certs
+    },
   },
-  secure: false,
   timezone: "+05:30",
   logging: false,
 });
