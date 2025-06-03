@@ -9,7 +9,7 @@ const http = require("http");
 const sequelize = require("./config/database");
 const { errorMessage } = require("./response_message/message");
 const { statusCodes } = require("./utils/commonVars");
-const port = 3000;
+const port = 3001;
 
 app.use(cors());
 app.use(bodyParser.json({ limit: "500mb" }));
