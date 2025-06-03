@@ -1,7 +1,7 @@
 const dotenv = require("dotenv").config();
 const { Sequelize } = require("sequelize");
 const logger = require("./logger");
-
+console.log('dotenv ->>> ', dotenv);
 const dbHost = dotenv.parsed.HOST;
 const dbDatabase = dotenv.parsed.DATABASE;
 const dbUser = dotenv.parsed.USER;
