@@ -8,7 +8,7 @@ const http = require("http");
 const sequelize = require("./config/database");
 const { errorMessage } = require("./response_message/message");
 const { statusCodes } = require("./utils/commonVars");
-
+console.log('Env-----------------------------', process.env);
 const port = 3000;
 
 app.use(cors());
